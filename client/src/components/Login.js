@@ -15,12 +15,20 @@ import { AiFillGoogleCircle, AiFillCheckCircle } from "react-icons/ai";
 import { useSearchParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
+
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+
+
 function Login() {
   let [searchParams] = useSearchParams();
   const [user, setUser] = useState({});
+  
   const email = searchParams.get("email");
   const fullname = searchParams.get("fullname");
   const secret = searchParams.get("secret");
+  const googleId = searchParams.get("googleId");
   useEffect(() => {
     if (email && fullname && secret) {
       localStorage.setItem(
@@ -29,6 +37,7 @@ function Login() {
           email,
           fullname,
           secret,
+          googleId,
         })
       );
     }
@@ -37,28 +46,34 @@ function Login() {
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
   }, []);
+
+  const logOut = () => {
+    window.localStorage.clear();
+    window.location.href = "./";
+  };
+  
   return (
-    <div style={{ background: "url('/background.jpg')", height: "100vh" }}>
-      <Container maxW={"2xl"} centerContent>
-        <Box w={"100%"} mt="4" bg={"white"} p="4" rounded={"md"}>
+    <div>
+    {/* <div   style={{ background: "url('/background.jpg')", height: "100vh" }} margin */}
+      {/* <Container maxW={"2xl"} centerContent> */}
+        {/* <Box w={"100%"} mt="4" bg={"white"} p="4" rounded={"md"}> */}
           {user && (
-            <Alert status="success">
-              <AlertIcon />
-              <AlertTitle> welcome {user.email}</AlertTitle>
-            </Alert>
+            <>
+              <Alert status="success">
+                <AlertIcon />
+                <AlertTitle> welcome {user.googleId}</AlertTitle>
+              </Alert>
+              <button onClick={logOut}>Logout</button>
+              <br />
+              <Home />
+            </>
           )}
           {!user && (
             <form action="http://localhost:5000/auth/google">
-              <VStack w={"100%"}>
-                <FormControl>
                   <FormLabel>Email address</FormLabel>
                   <Input type="email" />
-                  <FormHelperText>We'll never share your email.</FormHelperText>
-                </FormControl>
-                <FormControl>
                   <FormLabel>Password</FormLabel>
                   <Input type="password" />
-                </FormControl>
                 <Button
                   leftIcon={<AiFillCheckCircle />}
                   colorScheme="blue"
@@ -76,11 +91,10 @@ function Login() {
                 >
                   Google
                 </Button>
-              </VStack>
             </form>
           )}
-        </Box>
-      </Container>
+        {/* </Box> */}
+      {/* </Container> */}
     </div>
   );
 }
